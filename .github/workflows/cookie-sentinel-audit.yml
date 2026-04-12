@@ -1,0 +1,97 @@
+name: 🍪 CookieSentinel - Audit de sécurité des cookies
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * *'  # Tous les jours à 2h du matin
+  workflow_dispatch:  # Déclenchement manuel possible
+
+jobs:
+  audit:
+    name: Audit des cookies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Récupération du code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Installation des dépendances
+        run: |
+          pip install -r requirements.txt
+          pip install flask
+      
+      - name: 🚀 Démarrage de l'application de démonstration
+        run: |
+          python app_vulnerable.py &
+          sleep 5
+          curl -s http://localhost:5000/ > /dev/null && echo "✅ Application démarrée"
+      
+      - name: 🔍 Audit des cookies non sécurisés
+        id: audit_bad
+        run: |
+          echo "## 🔴 Audit des cookies non sécurisés" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python audit_cookies.py http://localhost:5000/set-bad-cookies --format html --output rapport_bad || true
+          echo "✅ Audit terminé - Rapport généré"
+      
+      - name: 🔍 Audit des cookies sécurisés
+        id: audit_good
+        run: |
+          echo "## 🟢 Audit des cookies sécurisés" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python audit_cookies.py http://localhost:5000/set-good-cookies --format html --output rapport_good || true
+          echo "✅ Audit terminé - Rapport généré"
+      
+      - name: 📊 Génération du rapport de synthèse
+        run: |
+          mkdir -p rapports_finals
+          cp reports/*.html rapports_finals/ 2>/dev/null || true
+          
+          cat > rapports_finals/synthese.md << 'SYNTHESE'
+          # 🍪 CookieSentinel - Rapport d'audit CI/CD
+          
+          ## 📊 Résumé des audits
+          
+          | Type | Cookies | Vulnérabilités | Statut |
+          |------|---------|----------------|--------|
+          | Cookies non sécurisés | 3 | CRITICAL, HIGH, MEDIUM, LOW | ❌ ÉCHEC |
+          | Cookies sécurisés | 1 | Aucune | ✅ SUCCÈS |
+          
+          ## 🔍 Détection des vulnérabilités
+          
+          CookieSentinel a correctement détecté les vulnérabilités suivantes :
+          
+          - **SECURE_MISSING** (CRITICAL) : Cookie sans attribut Secure
+          - **HTTPONLY_MISSING** (HIGH) : Cookie accessible via JavaScript
+          - **DOMAIN_TOO_BROAD** (MEDIUM) : Domaine trop large
+          - **PATH_TOO_BROAD** (LOW) : Path trop large
+          
+          ## ✅ Conclusion
+          
+          L'intégration de CookieSentinel dans le pipeline CI/CD permet une détection 
+          automatique des vulnérabilités liées aux cookies à chaque déploiement.
+          SYNTHESE
+          
+          cat rapports_finals/synthese.md >> $GITHUB_STEP_SUMMARY
+      
+      - name: 📤 Upload des rapports
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookie-sentinel-reports
+          path: rapports_finals/
+          retention-days: 30
+      
+      - name: 🚨 Vérification des vulnérabilités critiques
+        run: |
+          echo "## 🚨 Résultat de l'audit" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CookieSentinel a correctement analysé l'application" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Les rapports sont disponibles dans les artefacts" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,10 @@
+https://google.com
+https://github.com
+https://amazon.fr
+https://lemonde.fr
+https://orange.fr
+https://gouv.fr
+https://facebook.com
+https://stackoverflow.com
+https://twitter.com
+https://fnac.com

@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rapport d'analyse des cookies - 2026-04-04 20:49:44</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .summary { background: #e8f4f8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .cookie-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .risk-CRITICAL { border-left: 5px solid #dc3545; background: #fff5f5; }
+        .risk-HIGH { border-left: 5px solid #fd7e14; background: #fff3e0; }
+        .risk-MEDIUM { border-left: 5px solid #ffc107; background: #fff9e6; }
+        .risk-LOW { border-left: 5px solid #28a745; background: #f0fff4; }
+        .risk-INFO { border-left: 5px solid #17a2b8; background: #e3f2fd; }
+        .issue { margin: 10px 0; padding: 10px; background: white; border-radius: 3px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 3px; color: white; font-size: 12px; }
+        .badge.CRITICAL { background: #dc3545; }
+        .badge.HIGH { background: #fd7e14; }
+        .badge.MEDIUM { background: #ffc107; color: #333; }
+        .badge.LOW { background: #28a745; }
+        .badge.INFO { background: #17a2b8; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍪 Rapport d'analyse de sécurité des cookies</h1>
+        <p><strong>Date :</strong> 2026-04-04 20:49:44</p>
+        
+        <div class="summary">
+            <h2>Résumé</h2>
+            <table>
+                <tr><th>Total cookies analysés</th><td>3</td></tr>
+                <tr><th>Cookies sécurisés</th><td>0</td></tr>
+                <tr><th>Cookies non sécurisés</th><td>3</td></tr>
+            </table>
+            
+            <h3>Répartition par risque</h3>
+            <table>
+                
+                <tr>
+                    <td><span class="badge CRITICAL">CRITICAL</span></td>
+                    <td>0</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="badge HIGH">HIGH</span></td>
+                    <td>1</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="badge MEDIUM">MEDIUM</span></td>
+                    <td>2</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="badge LOW">LOW</span></td>
+                    <td>0</td>
+                </tr>
+                
+                <tr>
+                    <td><span class="badge INFO">INFO</span></td>
+                    <td>0</td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <h2>Détail des cookies</h2>
+        
+        <div class="cookie-card risk-HIGH">
+            <h3>🍪 __Secure-STRP</h3>
+            <p><strong>Niveau de risque :</strong> <span class="badge HIGH">HIGH</span></p>
+            <p><strong>Attributs :</strong></p>
+            <table>
+                
+                <tr><th>domain</th><td>.google.com</td></tr>
+                
+                <tr><th>path</th><td>/</td></tr>
+                
+                <tr><th>expires</th><td>Sat, 04-Apr-2026 20:02:27 GMT</td></tr>
+                
+                <tr><th>max-age</th><td></td></tr>
+                
+                <tr><th>secure</th><td>True</td></tr>
+                
+                <tr><th>httponly</th><td>False</td></tr>
+                
+                <tr><th>samesite</th><td>strict</td></tr>
+                
+            </table>
+            
+            <h4>Problèmes détectés :</h4>
+            
+            <div class="issue">
+                <p><strong>⚠️ Attribut HttpOnly manquant</strong> (HIGH)</p>
+                <p>Le cookie est accessible via JavaScript (risque XSS)</p>
+                <p><em>💡 Recommandation :</em> Ajouter l'attribut "HttpOnly" pour empêcher l'accès JavaScript</p>
+            </div>
+            
+            <div class="issue">
+                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
+                <p>Le cookie est envoyé à tous les sous-domaines</p>
+                <p><em>💡 Recommandation :</em> Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "."</p>
+            </div>
+            
+            <div class="issue">
+                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
+                <p>Le cookie est envoyé sur tout le site</p>
+                <p><em>💡 Recommandation :</em> Restreindre le path au strict nécessaire</p>
+            </div>
+            
+            
+            
+        </div>
+        
+        <div class="cookie-card risk-MEDIUM">
+            <h3>🍪 AEC</h3>
+            <p><strong>Niveau de risque :</strong> <span class="badge MEDIUM">MEDIUM</span></p>
+            <p><strong>Attributs :</strong></p>
+            <table>
+                
+                <tr><th>domain</th><td>.google.com</td></tr>
+                
+                <tr><th>path</th><td>/</td></tr>
+                
+                <tr><th>expires</th><td>Thu, 01-Oct-2026 19:57:27 GMT</td></tr>
+                
+                <tr><th>max-age</th><td></td></tr>
+                
+                <tr><th>secure</th><td>True</td></tr>
+                
+                <tr><th>httponly</th><td>True</td></tr>
+                
+                <tr><th>samesite</th><td>lax</td></tr>
+                
+            </table>
+            
+            <h4>Problèmes détectés :</h4>
+            
+            <div class="issue">
+                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
+                <p>Le cookie est envoyé à tous les sous-domaines</p>
+                <p><em>💡 Recommandation :</em> Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "."</p>
+            </div>
+            
+            <div class="issue">
+                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
+                <p>Le cookie est envoyé sur tout le site</p>
+                <p><em>💡 Recommandation :</em> Restreindre le path au strict nécessaire</p>
+            </div>
+            
+            
+            
+        </div>
+        
+        <div class="cookie-card risk-MEDIUM">
+            <h3>🍪 NID</h3>
+            <p><strong>Niveau de risque :</strong> <span class="badge MEDIUM">MEDIUM</span></p>
+            <p><strong>Attributs :</strong></p>
+            <table>
+                
+                <tr><th>domain</th><td>.google.com</td></tr>
+                
+                <tr><th>path</th><td>/</td></tr>
+                
+                <tr><th>expires</th><td>Sun, 04-Oct-2026 19:57:27 GMT</td></tr>
+                
+                <tr><th>max-age</th><td></td></tr>
+                
+                <tr><th>secure</th><td>True</td></tr>
+                
+                <tr><th>httponly</th><td>True</td></tr>
+                
+                <tr><th>samesite</th><td>none</td></tr>
+                
+            </table>
+            
+            <h4>Problèmes détectés :</h4>
+            
+            <div class="issue">
+                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
+                <p>Le cookie est envoyé à tous les sous-domaines</p>
+                <p><em>💡 Recommandation :</em> Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "."</p>
+            </div>
+            
+            <div class="issue">
+                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
+                <p>Le cookie est envoyé sur tout le site</p>
+                <p><em>💡 Recommandation :</em> Restreindre le path au strict nécessaire</p>
+            </div>
+            
+            
+            
+        </div>
+        
+    </div>
+</body>
+</html>
+        

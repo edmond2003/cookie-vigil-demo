@@ -1,0 +1,171 @@
+{
+  "timestamp": "20260316_090139",
+  "statistics": {
+    "total": 4,
+    "secure_count": 0,
+    "insecure_count": 4,
+    "risk_counts": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 3,
+      "LOW": 0,
+      "INFO": 0
+    }
+  },
+  "cookies": [
+    {
+      "cookie": {
+        "name": "__Secure-STRP",
+        "value": "AEEP7gJjC48qtkobBgwbUF6-z2N1wxLkcCESGdxA1b2ONT0172...",
+        "attributes": {
+          "domain": ".google.com",
+          "path": "/",
+          "expires": "Mon, 16-Mar-2026 08:06:18 GMT",
+          "max-age": "",
+          "secure": true,
+          "httponly": false,
+          "samesite": "strict"
+        },
+        "raw": "__Secure-STRP=AEEP7gJjC48qtkobBgwbUF6-z2N1wxLkcCESGdxA1b2ONT0172bNQD_ADXaDxaSbwQiRH98TgeXcz9NNSclnYk...",
+        "source": "set-cookie"
+      },
+      "issues": [
+        {
+          "id": "HTTPONLY_MISSING",
+          "name": "Attribut HttpOnly manquant",
+          "description": "Le cookie est accessible via JavaScript (risque XSS)",
+          "risk": "HIGH",
+          "recommendation": "Ajouter l'attribut \"HttpOnly\" pour empêcher l'accès JavaScript"
+        },
+        {
+          "id": "DOMAIN_TOO_BROAD",
+          "name": "Domaine trop large",
+          "description": "Le cookie est envoyé à tous les sous-domaines",
+          "risk": "MEDIUM",
+          "recommendation": "Limiter le domaine au minimum nécessaire, éviter les domaines commençant par \".\""
+        },
+        {
+          "id": "PATH_TOO_BROAD",
+          "name": "Path trop large",
+          "description": "Le cookie est envoyé sur tout le site",
+          "risk": "LOW",
+          "recommendation": "Restreindre le path au strict nécessaire"
+        }
+      ],
+      "risk_level": "HIGH",
+      "is_secure": false
+    },
+    {
+      "cookie": {
+        "name": "AEC",
+        "value": "AaJma5tT2946D4WAvhzAIqkjDPXQw35yBHx98eNvy3fumCcdxK...",
+        "attributes": {
+          "domain": ".google.com",
+          "path": "/",
+          "expires": "Sat, 12-Sep-2026 08:01:18 GMT",
+          "max-age": "",
+          "secure": true,
+          "httponly": true,
+          "samesite": "lax"
+        },
+        "raw": "AEC=AaJma5tT2946D4WAvhzAIqkjDPXQw35yBHx98eNvy3fumCcdxKrlT-SP9bE; expires=Sat, 12-Sep-2026 08:01:18 G...",
+        "source": "set-cookie"
+      },
+      "issues": [
+        {
+          "id": "DOMAIN_TOO_BROAD",
+          "name": "Domaine trop large",
+          "description": "Le cookie est envoyé à tous les sous-domaines",
+          "risk": "MEDIUM",
+          "recommendation": "Limiter le domaine au minimum nécessaire, éviter les domaines commençant par \".\""
+        },
+        {
+          "id": "PATH_TOO_BROAD",
+          "name": "Path trop large",
+          "description": "Le cookie est envoyé sur tout le site",
+          "risk": "LOW",
+          "recommendation": "Restreindre le path au strict nécessaire"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "is_secure": false
+    },
+    {
+      "cookie": {
+        "name": "NID",
+        "value": "529=vEqyh8m_um9VD0c_cLO35WdU1KC8OO8dm_9ERr8iAuDh-5...",
+        "attributes": {
+          "domain": ".google.com",
+          "path": "/",
+          "expires": "Tue, 15-Sep-2026 08:01:18 GMT",
+          "max-age": "",
+          "secure": true,
+          "httponly": true,
+          "samesite": "none"
+        },
+        "raw": "NID=529=vEqyh8m_um9VD0c_cLO35WdU1KC8OO8dm_9ERr8iAuDh-5x6ZQHrUeW9IDQqZpwNqLMCd1ZCPpfx35atRa8etUemEEXw...",
+        "source": "set-cookie"
+      },
+      "issues": [
+        {
+          "id": "DOMAIN_TOO_BROAD",
+          "name": "Domaine trop large",
+          "description": "Le cookie est envoyé à tous les sous-domaines",
+          "risk": "MEDIUM",
+          "recommendation": "Limiter le domaine au minimum nécessaire, éviter les domaines commençant par \".\""
+        },
+        {
+          "id": "PATH_TOO_BROAD",
+          "name": "Path trop large",
+          "description": "Le cookie est envoyé sur tout le site",
+          "risk": "LOW",
+          "recommendation": "Restreindre le path au strict nécessaire"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "is_secure": false
+    },
+    {
+      "cookie": {
+        "name": "__Secure-BUCKET",
+        "value": "CBU",
+        "attributes": {
+          "domain": ".google.com",
+          "path": "/",
+          "expires": "Sat, 12-Sep-2026 08:01:18 GMT",
+          "max-age": "",
+          "secure": true,
+          "httponly": true,
+          "samesite": ""
+        },
+        "raw": "__Secure-BUCKET=CBU; expires=Sat, 12-Sep-2026 08:01:18 GMT; path=/; domain=.google.com; Secure; Http...",
+        "source": "set-cookie"
+      },
+      "issues": [
+        {
+          "id": "SAMESITE_MISSING",
+          "name": "Attribut SameSite manquant",
+          "description": "Protection CSRF insuffisante",
+          "risk": "MEDIUM",
+          "recommendation": "Ajouter \"SameSite=Lax\" ou \"SameSite=Strict\" selon le besoin"
+        },
+        {
+          "id": "DOMAIN_TOO_BROAD",
+          "name": "Domaine trop large",
+          "description": "Le cookie est envoyé à tous les sous-domaines",
+          "risk": "MEDIUM",
+          "recommendation": "Limiter le domaine au minimum nécessaire, éviter les domaines commençant par \".\""
+        },
+        {
+          "id": "PATH_TOO_BROAD",
+          "name": "Path trop large",
+          "description": "Le cookie est envoyé sur tout le site",
+          "risk": "LOW",
+          "recommendation": "Restreindre le path au strict nécessaire"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "is_secure": false
+    }
+  ]
+}
