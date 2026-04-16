@@ -8,7 +8,7 @@ from flask import Flask, make_response, request
 import secrets
 
 app = Flask(__name__)
-app.secret_key = 'une_cle_tres_faible_pour_demo'  # ⚠️ Mauvaise pratique
+app.secret_key = 'une_cle_tres_faible_pour_demo'
 
 @app.route('/')
 def index():
@@ -24,6 +24,7 @@ def index():
             .bad { color: red; }
             .good { color: green; }
             button { padding: 10px; margin: 5px; cursor: pointer; }
+            code { background: #eee; padding: 2px 5px; border-radius: 3px; }
         </style>
     </head>
     <body>
@@ -39,14 +40,13 @@ def index():
                 <li><a href="/clear-cookies">🗑️ Effacer tous les cookies</a></li>
             </ul>
             
-            <h2>À propos :</h2>
-            <p>Cette application simule une API qui retourne des cookies volontairement mal configurés.</p>
-            <p>CookieSentinel doit détecter :</p>
+            <h2>Vulnérabilités testées :</h2>
             <ul>
-                <li>❌ Absence d'attribut <code>Secure</code></li>
-                <li>❌ Absence d'attribut <code>HttpOnly</code></li>
-                <li>❌ Domaine trop large (<code>.example.com</code>)</li>
-                <li>❌ Path trop large (<code>/</code>)</li>
+                <li>❌ <code>Secure</code> manquant (CRITICAL)</li>
+                <li>❌ <code>HttpOnly</code> manquant (HIGH)</li>
+                <li>❌ <code>SameSite</code> manquant (MEDIUM)</li>
+                <li>❌ Domaine trop large <code>.example.com</code> (MEDIUM)</li>
+                <li>❌ Path trop large <code>/</code> (LOW)</li>
             </ul>
         </div>
     </body>
@@ -64,16 +64,16 @@ def set_bad_cookies():
         <h1 style="color: red;">🔴 Cookies NON sécurisés définis !</h1>
         <p>Ces cookies présentent des vulnérabilités :</p>
         <ul>
-            <li><strong>session_insecure</strong> : pas de Secure, pas de HttpOnly</li>
-            <li><strong>tracking</strong> : domaine trop large (.example.com)</li>
-            <li><strong>user_data</strong> : path trop large (/)</li>
+            <li><strong>session_insecure</strong> : pas de Secure, pas de HttpOnly → <strong>CRITICAL + HIGH</strong></li>
+            <li><strong>tracking</strong> : domaine trop large (.example.com) → <strong>MEDIUM</strong></li>
+            <li><strong>user_data</strong> : path trop large (/) → <strong>LOW</strong></li>
         </ul>
         <h3>Vulnérabilités attendues :</h3>
         <ul>
-            <li>❌ SECURE_MISSING</li>
-            <li>❌ HTTPONLY_MISSING</li>
-            <li>❌ DOMAIN_TOO_BROAD</li>
-            <li>❌ PATH_TOO_BROAD</li>
+            <li>❌ SECURE_MISSING (CRITICAL)</li>
+            <li>❌ HTTPONLY_MISSING (HIGH)</li>
+            <li>❌ DOMAIN_TOO_BROAD (MEDIUM)</li>
+            <li>❌ PATH_TOO_BROAD (LOW)</li>
         </ul>
         <a href="/">← Retour à l'accueil</a>
     </body>
@@ -96,7 +96,7 @@ def set_bad_cookies():
 
 @app.route('/set-good-cookies')
 def set_good_cookies():
-    """Définit des cookies sécurisés (bonnes pratiques)"""
+    """Définit des cookies sécurisés (bonnes pratiques OWASP)"""
     response = make_response("""
     <!DOCTYPE html>
     <html>
@@ -158,7 +158,6 @@ def clear_cookies():
     </html>
     """)
     
-    # Effacer les cookies existants
     response.set_cookie('session_insecure', '', expires=0)
     response.set_cookie('tracking', '', expires=0)
     response.set_cookie('user_data', '', expires=0)
