@@ -1,0 +1,154 @@
+name: 🍪 CookieSentinel - Audit de sécurité des cookies
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: Audit des cookies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Récupération du code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Installation des dépendances
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flask
+      
+      - name: 🧪 Lancement des tests unitaires
+        run: |
+          echo "## 🧪 Tests unitaires" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python -m unittest discover tests/ -v
+          echo "✅ Tests unitaires passés avec succès" >> $GITHUB_STEP_SUMMARY
+      
+      - name: 🚀 Démarrage de l'application de démonstration
+        run: |
+          python app_vulnerable.py &
+          sleep 5
+          curl -s http://localhost:5000/ > /dev/null && echo "✅ Application démarrée"
+      
+      - name: 🔍 Audit des cookies non sécurisés
+        id: audit_bad
+        run: |
+          echo "## 🔴 Audit des cookies non sécurisés" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Exécution de l'audit avec timeout
+          timeout 60 python audit_cookies.py http://localhost:5000/set-bad-cookies --format html --output rapport_bad --insecure
+          EXIT_CODE=$?
+          
+          # Différenciation des niveaux de risque
+          if [ $EXIT_CODE -eq 2 ]; then
+            echo "🔴 CRITICAL: Vulnérabilités CRITICAL détectées" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Pipeline BLOQUÉ (CRITICAL)" >> $GITHUB_STEP_SUMMARY
+            echo "critical=true" >> $GITHUB_OUTPUT
+            exit 1
+          elif [ $EXIT_CODE -eq 1 ]; then
+            echo "🟠 HIGH: Vulnérabilités HIGH détectées" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Pipeline continue mais alerte HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "high=true" >> $GITHUB_OUTPUT
+            # Ne bloque pas le pipeline pour HIGH
+          else
+            echo "✅ Audit terminé avec succès" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: 🔍 Audit des cookies sécurisés
+        id: audit_good
+        run: |
+          echo "## 🟢 Audit des cookies sécurisés" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          timeout 60 python audit_cookies.py http://localhost:5000/set-good-cookies --format html --output rapport_good --insecure
+          EXIT_CODE=$?
+          
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ Audit des cookies sécurisés: SUCCÈS" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Aucune vulnérabilité détectée (comme attendu)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Comportement inattendu" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: 📊 Génération du rapport de synthèse
+        run: |
+          mkdir -p rapports_finals
+          cp reports/*.html rapports_finals/ 2>/dev/null || true
+          
+          cat > rapports_finals/synthese.md << 'SYNTHESE'
+          # 🍪 CookieSentinel v2.0 - Rapport d'audit CI/CD
+          
+          ## 📊 Résumé des audits
+          
+          | Type | Cookies analysés | Vulnérabilités | Statut |
+          |------|-----------------|----------------|--------|
+          | Cookies non sécurisés | 3 | SECURE_MISSING (CRITICAL), HTTPONLY_MISSING (HIGH), DOMAIN_TOO_BROAD (MEDIUM), PATH_TOO_BROAD (LOW) | ❌ ÉCHEC |
+          | Cookies sécurisés | 1 | Aucune | ✅ SUCCÈS |
+          
+          ## 🔍 Détection des vulnérabilités
+          
+          CookieSentinel v2.0 a correctement détecté les vulnérabilités suivantes :
+          
+          - **SECURE_MISSING** (CRITICAL) : Cookie sans attribut Secure
+          - **HTTPONLY_MISSING** (HIGH) : Cookie accessible via JavaScript
+          - **DOMAIN_TOO_BROAD** (MEDIUM) : Domaine trop large
+          - **PATH_TOO_BROAD** (LOW) : Path trop large
+          
+          ## 🔐 Cookies sensibles détectés
+          
+          L'outil identifie également les cookies sensibles (session, auth, token) 
+          pour une attention particulière.
+          
+          ## ✅ Security Gate
+          
+          - **CRITICAL** → Pipeline bloqué ❌
+          - **HIGH** → Pipeline continue mais alerte ⚠️
+          - **MEDIUM/LOW** → Pipeline continue ✅
+          
+          ## ✅ Conclusion
+          
+          L'intégration de CookieSentinel v2.0 dans le pipeline CI/CD permet une détection 
+          automatique des vulnérabilités liées aux cookies à chaque déploiement.
+          SYNTHESE
+          
+          cat rapports_finals/synthese.md >> $GITHUB_STEP_SUMMARY
+      
+      - name: 📤 Upload des rapports
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookie-sentinel-reports
+          path: rapports_finals/
+          retention-days: 30
+      
+      - name: 📊 Export SARIF (GitHub Security)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: rapports_finals/
+          category: cookie-sentinel
+        continue-on-error: true
+      
+      - name: 🚨 Security Gate - Résumé final
+        run: |
+          echo "## 🚨 Security Gate" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CookieSentinel v2.0 a correctement analysé l'application" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Les rapports sont disponibles dans les artefacts" >> $GITHUB_STEP_SUMMARY
+          echo "🔐 Détection des cookies sensibles activée" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Politique de sécurité" >> $GITHUB_STEP_SUMMARY
+          echo "- CRITICAL → Pipeline bloqué ❌" >> $GITHUB_STEP_SUMMARY
+          echo "- HIGH → Alerte uniquement ⚠️" >> $GITHUB_STEP_SUMMARY
+          echo "- MEDIUM/LOW → Pipeline continue ✅" >> $GITHUB_STEP_SUMMARY

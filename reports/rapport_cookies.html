@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Rapport CookieSentinel - 2026-04-16 02:42:56</title>
+    <title>Rapport CookieSentinel - 2026-04-20 09:01:17</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
         .container { max-width: 1300px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -49,14 +49,19 @@
 <body>
     <div class="container">
         <h1>🍪 Rapport d'analyse de sécurité des cookies</h1>
-        <p><strong>Généré le :</strong> 2026-04-16 02:42:56</p>
+        <p><strong>Généré le :</strong> 2026-04-20 09:01:17</p>
         
         <div class="summary">
             <h2>Résumé Global</h2>
             <table>
-                <tr><th>Total cookies analysés</th><td>4</td></tr>
+                <tr><th>Total cookies analysés</th><td>3</td></tr>
                 <tr><th>Cookies sécurisés</th><td>0</td></tr>
-                <tr><th>Cookies non sécurisés</th><td>4</td></tr>
+                <tr><th>Cookies non sécurisés</th><td>3</td></tr>
+                
+                <tr style="background: #fff3e0;">
+                    <th>🔐 Cookies SENSIBLES détectés</th>
+                    <td><strong style="color: #ff9800;">2</strong></strong></td>
+                </tr>
                 
             </table>
             
@@ -70,12 +75,12 @@
                 
                 <tr>
                     <td><span class="badge HIGH">HIGH</span></span></td>
-                    <td><strong>1</strong></strong></td>
+                    <td><strong>3</strong></strong></td>
                 </tr>
                 
                 <tr>
                     <td><span class="badge MEDIUM">MEDIUM</span></span></td>
-                    <td><strong>3</strong></strong></td>
+                    <td><strong>0</strong></strong></td>
                 </tr>
                 
                 <tr>
@@ -95,7 +100,9 @@
         
         <div class="cookie-card risk-HIGH">
             <h3>
-                🍪 __Secure-STRP
+                🍪 session_insecure
+                
+                <span class="sensitive-badge">🔐 SENSIBLE</span>
                 
             </h3>
             <p><strong>Niveau de risque :</strong> <span class="badge HIGH">HIGH</span></p>
@@ -103,19 +110,19 @@
             <h4>Attributs du cookie</h4>
             <table>
                 
-                <tr><th>domain</th><td>.google.com</td>
+                <tr><th>domain</th><td></td>
                 
                 <tr><th>path</th><td>/</td>
                 
-                <tr><th>expires</th><td>Thu, 16-Apr-2026 01:53:56 GMT</td>
+                <tr><th>expires</th><td></td>
                 
                 <tr><th>max-age</th><td></td>
                 
-                <tr><th>secure</th><td>True</td>
+                <tr><th>secure</th><td>False</td>
                 
                 <tr><th>httponly</th><td>False</td>
                 
-                <tr><th>samesite</th><td>strict</td>
+                <tr><th>samesite</th><td></td>
                 
             </table>
             
@@ -129,9 +136,9 @@
             </div>
             
             <div class="issue">
-                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
-                <p>Le cookie est envoyé à tous les sous-domaines</p>
-                <p><strong>Recommandation :</strong> Spécifier un domaine précis sans le point initial (.)</p>
+                <p><strong>⚠️ Attribut SameSite manquant</strong> (MEDIUM)</p>
+                <p>Protection insuffisante contre les attaques CSRF</p>
+                <p><strong>Recommandation :</strong> Ajouter &#34;SameSite=Lax&#34; (recommandé) ou &#34;SameSite=Strict&#34;</p>
             </div>
             
             <div class="issue">
@@ -143,134 +150,40 @@
             
         </div>
         
-        <div class="cookie-card risk-MEDIUM">
+        <div class="cookie-card risk-HIGH">
             <h3>
-                🍪 AEC
+                🍪 tracking
                 
             </h3>
-            <p><strong>Niveau de risque :</strong> <span class="badge MEDIUM">MEDIUM</span></p>
+            <p><strong>Niveau de risque :</strong> <span class="badge HIGH">HIGH</span></p>
             
             <h4>Attributs du cookie</h4>
             <table>
                 
-                <tr><th>domain</th><td>.google.com</td>
+                <tr><th>domain</th><td>example.com</td>
                 
                 <tr><th>path</th><td>/</td>
                 
-                <tr><th>expires</th><td>Tue, 13-Oct-2026 01:48:56 GMT</td>
+                <tr><th>expires</th><td></td>
                 
                 <tr><th>max-age</th><td></td>
                 
-                <tr><th>secure</th><td>True</td>
+                <tr><th>secure</th><td>False</td>
                 
-                <tr><th>httponly</th><td>True</td>
-                
-                <tr><th>samesite</th><td>lax</td>
-                
-            </table>
-            
-            
-            <h4>Problèmes détectés (3)</h4>
-            
-            <div class="issue">
-                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
-                <p>Le cookie est envoyé à tous les sous-domaines</p>
-                <p><strong>Recommandation :</strong> Spécifier un domaine précis sans le point initial (.)</p>
-            </div>
-            
-            <div class="issue">
-                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
-                <p>Le cookie est envoyé sur tout le site</p>
-                <p><strong>Recommandation :</strong> Restreindre le path à un répertoire spécifique</p>
-            </div>
-            
-            <div class="issue">
-                <p><strong>⚠️ Durée de vie excessive</strong> (LOW)</p>
-                <p>Le cookie a une durée de vie trop longue (&gt; 30 jours)</p>
-                <p><strong>Recommandation :</strong> Utiliser des durées courtes pour les cookies sensibles</p>
-            </div>
-            
-            
-        </div>
-        
-        <div class="cookie-card risk-MEDIUM">
-            <h3>
-                🍪 NID
-                
-            </h3>
-            <p><strong>Niveau de risque :</strong> <span class="badge MEDIUM">MEDIUM</span></p>
-            
-            <h4>Attributs du cookie</h4>
-            <table>
-                
-                <tr><th>domain</th><td>.google.com</td>
-                
-                <tr><th>path</th><td>/</td>
-                
-                <tr><th>expires</th><td>Fri, 16-Oct-2026 01:48:56 GMT</td>
-                
-                <tr><th>max-age</th><td></td>
-                
-                <tr><th>secure</th><td>True</td>
-                
-                <tr><th>httponly</th><td>True</td>
-                
-                <tr><th>samesite</th><td>none</td>
-                
-            </table>
-            
-            
-            <h4>Problèmes détectés (3)</h4>
-            
-            <div class="issue">
-                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
-                <p>Le cookie est envoyé à tous les sous-domaines</p>
-                <p><strong>Recommandation :</strong> Spécifier un domaine précis sans le point initial (.)</p>
-            </div>
-            
-            <div class="issue">
-                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
-                <p>Le cookie est envoyé sur tout le site</p>
-                <p><strong>Recommandation :</strong> Restreindre le path à un répertoire spécifique</p>
-            </div>
-            
-            <div class="issue">
-                <p><strong>⚠️ Durée de vie excessive</strong> (LOW)</p>
-                <p>Le cookie a une durée de vie trop longue (&gt; 30 jours)</p>
-                <p><strong>Recommandation :</strong> Utiliser des durées courtes pour les cookies sensibles</p>
-            </div>
-            
-            
-        </div>
-        
-        <div class="cookie-card risk-MEDIUM">
-            <h3>
-                🍪 __Secure-BUCKET
-                
-            </h3>
-            <p><strong>Niveau de risque :</strong> <span class="badge MEDIUM">MEDIUM</span></p>
-            
-            <h4>Attributs du cookie</h4>
-            <table>
-                
-                <tr><th>domain</th><td>.google.com</td>
-                
-                <tr><th>path</th><td>/</td>
-                
-                <tr><th>expires</th><td>Tue, 13-Oct-2026 01:48:56 GMT</td>
-                
-                <tr><th>max-age</th><td></td>
-                
-                <tr><th>secure</th><td>True</td>
-                
-                <tr><th>httponly</th><td>True</td>
+                <tr><th>httponly</th><td>False</td>
                 
                 <tr><th>samesite</th><td></td>
                 
             </table>
             
             
-            <h4>Problèmes détectés (4)</h4>
+            <h4>Problèmes détectés (3)</h4>
+            
+            <div class="issue">
+                <p><strong>⚠️ Attribut HttpOnly manquant</strong> (HIGH)</p>
+                <p>Le cookie est accessible via JavaScript (risque de vol par XSS)</p>
+                <p><strong>Recommandation :</strong> Ajouter &#34;HttpOnly&#34; pour les cookies de session et sensibles</p>
+            </div>
             
             <div class="issue">
                 <p><strong>⚠️ Attribut SameSite manquant</strong> (MEDIUM)</p>
@@ -279,21 +192,61 @@
             </div>
             
             <div class="issue">
-                <p><strong>⚠️ Domaine trop large</strong> (MEDIUM)</p>
-                <p>Le cookie est envoyé à tous les sous-domaines</p>
-                <p><strong>Recommandation :</strong> Spécifier un domaine précis sans le point initial (.)</p>
+                <p><strong>⚠️ Path trop large</strong> (LOW)</p>
+                <p>Le cookie est envoyé sur tout le site</p>
+                <p><strong>Recommandation :</strong> Restreindre le path à un répertoire spécifique</p>
+            </div>
+            
+            
+        </div>
+        
+        <div class="cookie-card risk-HIGH">
+            <h3>
+                🍪 user_data
+                
+                <span class="sensitive-badge">🔐 SENSIBLE</span>
+                
+            </h3>
+            <p><strong>Niveau de risque :</strong> <span class="badge HIGH">HIGH</span></p>
+            
+            <h4>Attributs du cookie</h4>
+            <table>
+                
+                <tr><th>domain</th><td></td>
+                
+                <tr><th>path</th><td>/</td>
+                
+                <tr><th>expires</th><td></td>
+                
+                <tr><th>max-age</th><td></td>
+                
+                <tr><th>secure</th><td>False</td>
+                
+                <tr><th>httponly</th><td>False</td>
+                
+                <tr><th>samesite</th><td></td>
+                
+            </table>
+            
+            
+            <h4>Problèmes détectés (3)</h4>
+            
+            <div class="issue">
+                <p><strong>⚠️ Attribut HttpOnly manquant</strong> (HIGH)</p>
+                <p>Le cookie est accessible via JavaScript (risque de vol par XSS)</p>
+                <p><strong>Recommandation :</strong> Ajouter &#34;HttpOnly&#34; pour les cookies de session et sensibles</p>
+            </div>
+            
+            <div class="issue">
+                <p><strong>⚠️ Attribut SameSite manquant</strong> (MEDIUM)</p>
+                <p>Protection insuffisante contre les attaques CSRF</p>
+                <p><strong>Recommandation :</strong> Ajouter &#34;SameSite=Lax&#34; (recommandé) ou &#34;SameSite=Strict&#34;</p>
             </div>
             
             <div class="issue">
                 <p><strong>⚠️ Path trop large</strong> (LOW)</p>
                 <p>Le cookie est envoyé sur tout le site</p>
                 <p><strong>Recommandation :</strong> Restreindre le path à un répertoire spécifique</p>
-            </div>
-            
-            <div class="issue">
-                <p><strong>⚠️ Durée de vie excessive</strong> (LOW)</p>
-                <p>Le cookie a une durée de vie trop longue (&gt; 30 jours)</p>
-                <p><strong>Recommandation :</strong> Utiliser des durées courtes pour les cookies sensibles</p>
             </div>
             
             
