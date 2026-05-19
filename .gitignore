@@ -1,22 +1,42 @@
-# Virtual environment
-venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Generated reports
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Reports and generated artifacts
 reports/
 *.html
 *.csv
 *.json
-*.md
+*.md.generated
 
-# Database files
+# Databases
 *.db
 cookies.db
 
-# Environment variables
+# Secrets and local config
 .env
+.env.*
+*.pem
+*.key
+*.crt
 
-# IDE
+# OS / editors
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
+
+# Docker
+*.log
