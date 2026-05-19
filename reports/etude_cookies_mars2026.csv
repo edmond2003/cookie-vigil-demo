@@ -1,5 +1,0 @@
-Cookie,Risque,Problèmes,Recommandations,Secure,HttpOnly,SameSite
-__Secure-STRP,HIGH,Attribut HttpOnly manquant; Domaine trop large; Path trop large,"Ajouter l'attribut ""HttpOnly"" pour empêcher l'accès JavaScript; Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "".""; Restreindre le path au strict nécessaire",True,False,strict
-AEC,MEDIUM,Domaine trop large; Path trop large,"Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "".""; Restreindre le path au strict nécessaire",True,True,lax
-NID,MEDIUM,Domaine trop large; Path trop large,"Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "".""; Restreindre le path au strict nécessaire",True,True,none
-__Secure-BUCKET,MEDIUM,Attribut SameSite manquant; Domaine trop large; Path trop large,"Ajouter ""SameSite=Lax"" ou ""SameSite=Strict"" selon le besoin; Limiter le domaine au minimum nécessaire, éviter les domaines commençant par "".""; Restreindre le path au strict nécessaire",True,True,

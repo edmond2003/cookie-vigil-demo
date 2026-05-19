@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Generated reports
+reports/
+*.html
+*.csv
+*.json
+*.md
+
+# Database files
+*.db
+cookies.db
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  vulnerable-app:
+    build: ./vulnerable_app
+    container_name: vuln_app
+    ports:
+      - "5000:5000"
+    networks:
+      - cookie-net
+
+  cookievigil:
+    build: .
+    container_name: vigil_scanner
+    depends_on:
+      - vulnerable-app
+    environment:
+      - TARGET_URL=http://vulnerable-app:5000
+    command: ["${TARGET_URL}/set-bad-cookies", "--format", "all", "--output", "/reports/scan_result", "--fail-on", "none"]
+    volumes:
+      - ./reports:/reports
+    networks:
+      - cookie-net
+
+networks:
+  cookie-net:
+    driver: bridge
