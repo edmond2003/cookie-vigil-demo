@@ -1,98 +1,150 @@
-
-**SECURITY.md**
-```markdown
 # Politique De Sécurité
 
-## Périmètre
+## Objectif
 
-CookieVigil est un outil académique et DevSecOps destiné à l’audit automatisé de la configuration des cookies web.
+Ce document décrit les règles de sécurité liées à l’utilisation, au développement et à la publication de CookieVigil.
+
+CookieVigil est un outil d’audit automatisé de la sécurité des cookies web. Il peut manipuler des métadonnées sensibles, notamment des noms de cookies, des attributs de sécurité et des extraits d’en-têtes HTTP `Set-Cookie`.
+
+L’objectif de cette politique est de réduire les risques liés à l’utilisation de l’outil et de préciser les bonnes pratiques à respecter.
+
+## Périmètre
 
 Le projet comprend :
 
 - l’outil d’audit CookieVigil ;
-- une application Flask volontairement vulnérable pour les démonstrations ;
-- des exemples d’intégration Docker et CI/CD ;
-- des rapports générés à partir des analyses.
+- les modules Python de collecte, d’analyse et de génération de rapports ;
+- une application Flask volontairement vulnérable utilisée pour les démonstrations ;
+- des fichiers Docker pour reproduire l’environnement de test ;
+- un workflow CI/CD GitHub Actions ;
+- des rapports générés lors des analyses.
 
-L’application vulnérable incluse dans le projet est intentionnellement non sécurisée. Elle doit être utilisée uniquement dans un environnement de laboratoire contrôlé.
+L’application vulnérable incluse dans le dossier `vulnerable_app/` est intentionnellement non sécurisée. Elle doit être utilisée uniquement dans un environnement de laboratoire contrôlé.
 
 ## Utilisation Autorisée
 
 CookieVigil doit être utilisé uniquement sur :
 
 - des applications que vous possédez ;
-- des environnements de test ou de laboratoire ;
-- des systèmes pour lesquels vous disposez d’une autorisation explicite ;
-- des cibles prévues dans un cadre pédagogique ou professionnel autorisé.
+- des environnements de test ;
+- des environnements de laboratoire ;
+- des applications de staging ou de préproduction autorisées ;
+- des systèmes pour lesquels vous disposez d’une autorisation explicite.
 
-L’utilisation de cet outil contre des systèmes tiers sans autorisation peut être illégale.
+L’utilisation de CookieVigil contre des systèmes tiers sans autorisation peut être illégale.
 
-## Données Sensibles
+## Usage Interdit
 
-CookieVigil analyse des en-têtes HTTP `Set-Cookie`. Ces en-têtes peuvent contenir des informations sensibles ou des identifiants de session.
+Il est interdit d’utiliser CookieVigil pour :
 
-Pour limiter les risques :
+- scanner des applications sans autorisation ;
+- collecter des cookies de session réels appartenant à des tiers ;
+- contourner des mécanismes de sécurité sans cadre légal ;
+- publier des rapports contenant des données sensibles ;
+- exposer l’application vulnérable sur Internet ;
+- intégrer de vrais identifiants dans des scripts, logs ou pipelines publics.
 
-- les valeurs des cookies sont tronquées dans les rapports ;
-- les valeurs complètes sont réservées à l’analyse interne ;
-- des métadonnées comme la longueur et le hash SHA-256 peuvent être générées ;
-- les rapports doivent être considérés comme des artefacts sensibles.
+## Données Manipulées
 
-Il est déconseillé de publier publiquement des rapports générés sur de vraies applications.
+CookieVigil peut traiter les informations suivantes :
 
-## Gestion Des Secrets
+- noms de cookies ;
+- valeurs de cookies tronquées ;
+- attributs `Secure`, `HttpOnly`, `SameSite`, `Domain`, `Path`, `Expires`, `Max-Age` ;
+- en-têtes HTTP `Set-Cookie` tronqués ;
+- URLs sources ;
+- codes de statut HTTP ;
+- horodatages de collecte ;
+- longueur des valeurs de cookies ;
+- hash SHA-256 des valeurs de cookies ;
+- catégories de cookies ;
+- niveaux de risque ;
+- recommandations de sécurité.
 
-Ne stockez jamais dans le dépôt :
+## Protection Des Valeurs De Cookies
 
-- des identifiants réels ;
-- des mots de passe ;
-- des tokens d’accès ;
-- des cookies de session réels ;
-- des rapports contenant des données sensibles ;
-- des fichiers `.env` contenant des secrets.
+Pour limiter l’exposition des secrets :
 
-Les identifiants utilisés dans les démonstrations doivent être des comptes de test.
+- les valeurs complètes ne sont pas destinées à être affichées dans les rapports ;
+- les valeurs affichées sont tronquées ;
+- la valeur complète peut être conservée temporairement en mémoire pour certaines analyses internes ;
+- un hash SHA-256 peut être généré pour identifier une valeur sans l’exposer directement ;
+- les rapports doivent être traités comme des artefacts sensibles.
+
+Même tronqués, certains en-têtes peuvent révéler des informations utiles à un attaquant. Les rapports ne doivent donc pas être publiés sans revue préalable.
 
 ## Rapports Générés
 
-Les rapports produits par CookieVigil peuvent contenir :
+Les rapports peuvent être générés en plusieurs formats :
 
-- des noms de cookies ;
-- des attributs de sécurité ;
-- des URLs sources ;
-- des en-têtes `Set-Cookie` tronqués ;
-- des hashes de valeurs ;
-- des horodatages de collecte.
+```text
+JSON
+HTML
+CSV
+Markdown
 
-Ces rapports doivent être stockés avec précaution, surtout lorsqu’ils proviennent d’environnements réels.
+Ces rapports peuvent contenir :
 
-## Sécurité De L’Outil
+des noms de cookies ;
+des URLs internes ;
+des informations sur l’architecture applicative ;
+des en-têtes Set-Cookie tronqués ;
+des recommandations de correction ;
+des niveaux de risque ;
+des hashes de valeurs.
+Recommandations :
 
-CookieVigil applique plusieurs mesures pour réduire l’exposition des données :
+ne pas publier les rapports générés sur des applications réelles ;
+ne pas les envoyer sur des canaux non sécurisés ;
+limiter leur accès aux personnes autorisées ;
+supprimer les rapports obsolètes ;
+ne pas les versionner dans Git sauf s’ils sont anonymisés.
+Gestion Des Secrets
+Ne stockez jamais dans le dépôt :
 
-- troncature des valeurs de cookies dans les sorties ;
-- conservation de la valeur complète uniquement pour certaines analyses internes ;
-- génération de hash SHA-256 pour identifier une valeur sans l’afficher directement ;
-- possibilité de désactiver l’échec CI/CD avec `--fail-on none` dans un contexte de démonstration ;
-- possibilité de contrôler les seuils avec `--fail-on` et `--fail-score-below`.
+mots de passe ;
+tokens d’accès ;
+cookies de session réels ;
+clés privées ;
+certificats privés ;
+fichiers .env contenant des secrets ;
+rapports contenant des données sensibles ;
+captures contenant des cookies actifs.
+Les identifiants utilisés dans les démonstrations doivent être des comptes de test.
 
-## Utilisation En CI/CD
+Authentification Et Option --login-data
+CookieVigil prend en charge une authentification simple par requête POST avec l’option :
 
-Lorsqu’il est intégré dans une chaîne DevSecOps, CookieVigil peut faire échouer un pipeline si une politique de sécurité n’est pas respectée.
+--login-data "username=admin&password=admin123"
+Précautions :
 
-Exemple :
+utilisez uniquement des comptes de test ;
+évitez d’utiliser de vrais mots de passe ;
+évitez de conserver ces commandes dans l’historique shell ;
+n’affichez pas les identifiants dans les captures d’écran ;
+n’utilisez pas de secrets réels dans GitHub Actions ou GitLab CI sans gestionnaire de secrets.
+Dans un pipeline CI/CD, utilisez les mécanismes de secrets fournis par la plateforme.
 
-```bash
-python audit_cookies.py https://example.com --format all --fail-on high
-Ou avec un score minimal :
+Sécurité De L’Exécution Docker
+CookieVigil peut être exécuté dans un conteneur Docker.
 
-python audit_cookies.py https://example.com --fail-score-below 70
-Les rapports générés dans le pipeline doivent être traités comme des artefacts potentiellement sensibles.
+Avantages :
 
+isolation de l’environnement d’exécution ;
+reproductibilité ;
+absence de dépendances Python à installer sur l’hôte ;
+meilleure intégration dans les pipelines CI/CD ;
+réduction des conflits de versions.
+Le conteneur CookieVigil est conçu pour s’exécuter avec un utilisateur non-root afin de limiter l’impact d’une éventuelle compromission.
+
+Le dossier reports/ peut être monté comme volume. Si l’utilisateur non-root du conteneur ne peut pas écrire dans ce dossier, corrigez les permissions :
+
+sudo chown -R 1000:1000 reports
+chmod -R u+rwX reports
 Application Vulnérable
-Le dossier vulnerable_app/ contient une application volontairement vulnérable.
+Le dossier vulnerable_app/ contient une application Flask volontairement vulnérable.
 
-Elle sert uniquement à démontrer :
+Elle sert à démontrer :
 
 l’absence de Secure ;
 l’absence de HttpOnly ;
@@ -100,21 +152,69 @@ l’absence de SameSite ;
 les tokens faibles ;
 les cookies contenant des JWT ;
 les cookies à durée de vie excessive ;
-les scénarios d’authentification.
-Cette application ne doit jamais être exposée sur Internet.
+les cookies générés après authentification.
+Cette application :
 
-Signalement D’Une Vulnérabilité
-Si vous identifiez une vulnérabilité dans CookieVigil lui-même, il est recommandé de la signaler de manière responsable au mainteneur du projet.
+ne doit pas être exposée sur Internet ;
+ne doit pas être utilisée en production ;
+ne doit pas contenir de vrais utilisateurs ;
+ne doit pas contenir de secrets réels ;
+doit rester confinée à un environnement local, Docker ou laboratoire.
+Utilisation En CI/CD
+CookieVigil peut être intégré dans une chaîne DevSecOps.
 
-Le signalement doit idéalement contenir :
+Exemple :
 
-une description claire du problème ;
-les étapes de reproduction ;
-l’impact potentiel ;
-la version ou le commit concerné ;
-une proposition de correction si possible.
+python audit_cookies.py https://example.com --format all --fail-on high
+Ou avec un score minimal :
+
+python audit_cookies.py https://example.com --format all --fail-score-below 70
+Lorsque l’outil est utilisé dans un pipeline :
+
+les rapports doivent être traités comme des artefacts sensibles ;
+les secrets doivent être gérés par la plateforme CI/CD ;
+les cibles doivent être des environnements autorisés ;
+les seuils de blocage doivent être adaptés à la politique de sécurité du projet.
+Politique De Blocage
+CookieVigil peut retourner un code de sortie non nul selon :
+
+le niveau de risque détecté avec --fail-on ;
+le score global avec --fail-score-below.
+Exemples :
+
+python audit_cookies.py https://example.com --fail-on critical
+python audit_cookies.py https://example.com --fail-on high
+python audit_cookies.py https://example.com --fail-score-below 70
+L’option suivante désactive le blocage et convient aux démonstrations :
+
+python audit_cookies.py https://example.com --fail-on none
+Bonnes Pratiques Pour Les Développeurs
+Lors du développement de CookieVigil :
+
+ne pas journaliser les valeurs complètes des cookies ;
+éviter d’ajouter des dépendances inutiles ;
+maintenir les dépendances à jour ;
+exécuter les tests avant chaque commit ;
+éviter les fichiers générés dans le dépôt ;
+ne pas versionner venv/, __pycache__/, reports/ ou cookies.db ;
+vérifier les permissions des fichiers Docker ;
+privilégier l’exécution non-root dans les conteneurs.
+Commande recommandée avant commit :
+
+python -m unittest discover -s tests -p "test_*.py" -v
+git status
+Bonnes Pratiques Pour Les Utilisateurs
+Lors de l’utilisation de CookieVigil :
+
+obtenez une autorisation avant tout audit ;
+utilisez des comptes de test ;
+stockez les rapports dans un emplacement protégé ;
+supprimez les rapports qui ne sont plus nécessaires ;
+évitez de partager les rapports bruts ;
+interprétez les résultats selon le contexte applicatif ;
+complétez l’analyse avec des outils comme Burp Suite ou OWASP ZAP si nécessaire.
 Limites De Sécurité
-CookieVigil fournit une analyse automatisée basée sur les cookies observés dans les réponses HTTP.
+CookieVigil fournit une analyse automatisée basée principalement sur les cookies observés dans les réponses HTTP.
 
 Il ne remplace pas :
 
@@ -125,4 +225,50 @@ une analyse dynamique dans un navigateur ;
 Burp Suite ;
 OWASP ZAP ;
 une expertise humaine.
-Les résultats doivent être interprétés selon le contexte technique et métier de l’application.
+Limites actuelles :
+
+l’outil n’exécute pas encore le JavaScript côté client ;
+il ne simule pas un navigateur complet ;
+il ne détecte pas tous les cookies créés dynamiquement par scripts ;
+il ne valide pas la logique métier de l’application ;
+il ne prouve pas automatiquement l’exploitabilité de chaque risque.
+Perspectives De Sécurité
+Des améliorations futures peuvent renforcer la sécurité et la couverture de l’outil :
+
+intégration d’un navigateur headless comme Playwright ;
+support des cookies créés côté client ;
+configuration des règles via fichier de politique ;
+export SARIF pour GitHub Security ;
+signature ou horodatage des rapports ;
+intégration avec un coffre de secrets pour les scans authentifiés.
+Signalement D’Une Vulnérabilité
+Si vous identifiez une vulnérabilité dans CookieVigil lui-même, signalez-la de manière responsable au mainteneur du projet.
+
+Un bon signalement doit contenir :
+
+une description claire du problème ;
+les étapes de reproduction ;
+l’impact potentiel ;
+la version ou le commit concerné ;
+les logs utiles si disponibles ;
+une proposition de correction si possible.
+Ne publiez pas publiquement une vulnérabilité avant qu’une correction ou une mesure d’atténuation ne soit disponible.
+
+Clause De Responsabilité
+CookieVigil est fourni dans un objectif pédagogique, académique et DevSecOps.
+
+L’utilisateur est responsable :
+
+du choix des cibles analysées ;
+de l’obtention des autorisations nécessaires ;
+de la protection des rapports générés ;
+de l’interprétation des résultats ;
+du respect des lois et règles applicables.
+L’auteur du projet ne peut être tenu responsable d’un usage non autorisé ou malveillant de l’outil.
+
+
+Après remplacement :
+
+```bash
+git add SECURITY.md
+git commit -m "Rewrite security policy with complete French guidance"

@@ -1,8 +1,8 @@
 # CookieVigil
 
-CookieVigil est un outil automatisé d’audit de la sécurité des cookies web, conçu pour les environnements DevSecOps et les démonstrations académiques en cybersécurité.
+CookieVigil est un outil automatisé d’audit de la sécurité des cookies web, conçu pour les environnements DevSecOps, les tests de sécurité applicative et les démonstrations académiques en cybersécurité.
 
-Il analyse les en-têtes HTTP `Set-Cookie`, détecte les mauvaises configurations, classe les cookies selon leur rôle probable, corrèle les risques de sécurité, génère des rapports exploitables et peut faire échouer un pipeline CI/CD selon une politique configurable.
+L’outil analyse les en-têtes HTTP `Set-Cookie`, détecte les mauvaises configurations, classe les cookies selon leur rôle probable, corrèle les risques, génère des rapports exploitables et peut faire échouer un pipeline CI/CD selon une politique configurable.
 
 ## Contexte Du Projet
 
@@ -12,17 +12,31 @@ Ce projet s’inscrit dans le cadre du mémoire :
 
 L’objectif est de contribuer à la sécurisation des applications web en détectant automatiquement les configurations risquées des cookies dès les premières phases du cycle de développement.
 
-## Fonctionnalités
+CookieVigil peut être utilisé :
+
+- en local sur une machine d’audit ;
+- dans un environnement de laboratoire distribué ;
+- dans Docker ;
+- dans une chaîne CI/CD ;
+- contre une application de démonstration ;
+- contre une application réelle, uniquement avec autorisation.
+
+## Fonctionnalités Principales
 
 CookieVigil permet de :
 
 - collecter les cookies depuis les réponses HTTP ;
 - analyser les cookies présents dans les redirections HTTP ;
-- détecter les mauvaises configurations liées aux attributs de sécurité ;
+- parser les en-têtes `Set-Cookie` ;
+- détecter les attributs de sécurité absents ou mal configurés ;
 - classifier les cookies selon leur rôle probable ;
-- corréler plusieurs faiblesses pour produire une analyse de risque plus pertinente ;
-- générer des rapports dans plusieurs formats ;
-- s’intégrer dans une chaîne CI/CD avec des seuils de blocage.
+- contextualiser la sévérité selon le type de cookie ;
+- corréler plusieurs faiblesses pour produire un scénario de risque ;
+- calculer un score global de sécurité ;
+- générer des rapports en plusieurs formats ;
+- retourner des codes de sortie exploitables dans un pipeline CI/CD ;
+- fonctionner en environnement Docker ;
+- auditer une application après authentification simple par formulaire POST.
 
 ## Règles De Sécurité Analysées
 
@@ -45,36 +59,38 @@ CookieVigil ne se limite pas à signaler les attributs manquants. Il tente égal
 
 Catégories prises en charge :
 
-- `SESSION` ;
-- `AUTH` ;
-- `JWT` ;
-- `CSRF` ;
-- `TRACKING` ;
-- `ANALYTICS` ;
-- `PERSISTENT_AUTH` ;
-- `SENSITIVE` ;
-- `FUNCTIONAL`.
+```text
+SESSION
+AUTH
+JWT
+CSRF
+TRACKING
+ANALYTICS
+PERSISTENT_AUTH
+SENSITIVE
+FUNCTIONAL
 
-Cette classification permet de distinguer, par exemple, un cookie de session mal protégé d’un cookie fonctionnel ou de suivi moins critique.
+Cette classification permet de distinguer un cookie de session mal protégé d’un cookie fonctionnel, analytique ou de suivi.
 
-## Corrélation Des Risques
+Exemple :
 
-L’outil applique une logique de corrélation pour mieux expliquer les scénarios d’attaque possibles.
+un cookie SESSION sans Secure peut être classé CRITICAL ;
+un cookie TRACKING sans HttpOnly peut être classé INFO ou LOW ;
+un cookie JWT sans HttpOnly peut produire une corrélation de risque liée au vol de jeton via XSS.
+Corrélation Des Risques
+CookieVigil applique une logique de corrélation afin d’expliquer les scénarios d’attaque possibles.
 
-Exemples :
+Exemples de corrélations :
 
-- cookie de session sans `Secure` et sans `HttpOnly` ;
-- JWT accessible via JavaScript ;
-- cookie sensible sans protection `SameSite` ;
-- cookie sensible partagé avec plusieurs sous-domaines.
+cookie de session sans Secure et sans HttpOnly ;
+JWT accessible via JavaScript ;
+cookie sensible sans protection SameSite ;
+cookie sensible partagé avec plusieurs sous-domaines.
+Cette approche permet de passer d’une simple détection d’attributs absents à une analyse de risque contextualisée.
 
-Cette approche permet de passer d’une simple détection technique à une analyse de risque plus contextualisée.
-
-## Architecture
-
+Architecture
 Architecture logique de l’outil :
 
-```text
 Interface CLI
      |
      v
@@ -95,6 +111,7 @@ CookieReporter
      v
 Rapports + Code de sortie CI/CD
 
+
 Architecture de démonstration :
 
 VM1 ou conteneur Docker :
@@ -104,8 +121,8 @@ VM2 ou conteneur Docker :
   CookieVigil
   
 Cette séparation permet de simuler un scénario réaliste dans lequel un outil d’audit externe analyse une application web cible.
-Arborescence Du Projet:
 
+Arborescence Du Projet
 cookie-vigil-demo/
 ├── audit_cookies.py
 ├── cookievigil.py
@@ -116,6 +133,11 @@ cookie-vigil-demo/
 │   ├── utils.py
 │   └── __init__.py
 ├── tests/
+│   ├── test_analyzer.py
+│   ├── test_collector.py
+│   ├── test_integration.py
+│   ├── test_reporter.py
+│   └── test_utils.py
 ├── vulnerable_app/
 │   ├── app.py
 │   ├── Dockerfile
@@ -139,18 +161,20 @@ python -m venv venv
 source venv/bin/activate
 
 Installer les dépendances :
-
 pip install -r requirements.txt
+
 Vérifier l’installation avec les tests :
 
 python -m unittest discover -s tests -p "test_*.py" -v
-Utilisation De Base
+
+Utilisation Locale
 Analyser une URL :
 
 python audit_cookies.py https://example.com
-Analyser une URL avec sortie détaillée :
 
+Analyser une URL avec sortie détaillée :
 python audit_cookies.py https://example.com --verbose
+
 Générer tous les formats de rapport :
 
 python audit_cookies.py https://example.com --format all --output rapport_cookies
@@ -160,37 +184,118 @@ python audit_cookies.py \
   https://example.com \
   https://example.com/login \
   --format all
-Analyse Avec Authentification
-CookieVigil permet une authentification simple par requête POST afin d’analyser des cookies générés après connexion.
+  
+Installation Comme Commande SystèmePour utiliser CookieVigil comme un outil en ligne de commande, à la manière d’outils comme nmap ou amass :
+bash
 
+
+
+chmod +x audit_cookies.py
+chmod +x cookievigil.py
+sudo ln -sf "$(pwd)/cookievigil.py" /usr/local/bin/cookievigil
+
+Vérifier l’installation :
+bash
+
+
+
+cookievigil --help
+
+Utiliser l’outil :
+bash
+
+
+
+cookievigil https://example.com --format all
+
+Analyse D’un Site En LigneExemple simple :
+bash
+
+
+
+cookievigil https://google.com --fail-on none
+
+Exemple avec génération complète des rapports :
+bash
+
+
+
+cookievigil https://example.com \
+  --format all \
+  --output audit_site \
+  --fail-on none
+
+Exemple avec politique de blocage :
+bash
+
+
+
+cookievigil https://example.com \
+  --format all \
+  --fail-on high
+
+Dans ce dernier cas, le programme retourne un code de sortie non nul si un risque HIGH ou CRITICAL est détecté.
+Analyse Avec AuthentificationCookieVigil permet une authentification simple par requête POST afin d’analyser des cookies générés après connexion.
 Exemple :
+bash
 
-python audit_cookies.py http://localhost:5000/dashboard \
+
+
+cookievigil http://localhost:5000/dashboard \
   --session \
   --login-url http://localhost:5000/login \
   --login-data "username=admin&password=admin123" \
   --format all
-Options DevSecOps
-Faire échouer l’exécution selon un niveau de risque :
 
-python audit_cookies.py https://example.com --fail-on high
+Attention : évitez d’utiliser de vrais identifiants dans l’historique shell ou dans un pipeline CI/CD. Préférez des comptes de test.
+Options DevSecOpsFaire échouer l’exécution selon un niveau de risque :
+bash
+
+
+
+cookievigil https://example.com --fail-on high
+
 Niveaux disponibles :
+text
+
+
 
 none
 critical
 high
 medium
 low
+
 Faire échouer l’exécution si le score de sécurité est inférieur à un seuil :
+bash
 
-python audit_cookies.py https://example.com --fail-score-below 70
+
+
+cookievigil https://example.com --fail-score-below 70
+
 Exemple adapté à un pipeline CI/CD :
+bash
 
-python audit_cookies.py https://example.com --format all --fail-on high
-Application Vulnérable De Démonstration
-Le dossier vulnerable_app/ contient une application Flask volontairement vulnérable.
 
+
+cookievigil https://example.com \
+  --format all \
+  --fail-on high
+
+Exemple adapté à une phase d’observation sans blocage :
+bash
+
+
+
+cookievigil https://example.com \
+  --format all \
+  --fail-on none
+
+Application Vulnérable De DémonstrationLe dossier vulnerable_app/ contient une application Flask volontairement vulnérable.
 Routes disponibles :
+text
+
+
 
 /set-bad-cookies
 /set-good-cookies
@@ -201,74 +306,227 @@ Routes disponibles :
 /login
 /dashboard
 /api/health
-Cette application sert à démontrer les cas suivants :
 
-cookies sans attributs de sécurité ;
-cookies correctement configurés ;
-token faible ;
-JWT stocké dans un cookie ;
-cookie à durée de vie excessive ;
-cookies générés après authentification.
-Utilisation Avec Docker
+Cette application sert à démontrer :
+des cookies sans attributs de sécurité ;
+des cookies correctement configurés ;
+un token faible ;
+un JWT stocké dans un cookie ;
+un cookie à durée de vie excessive ;
+des cookies générés après authentification.
+Cette application ne doit pas être exposée sur Internet.
+Utilisation Avec DockerConstruire l’image CookieVigil :
+bash
+
+
+
+docker build -t cookievigil .
+
+Afficher l’aide :
+bash
+
+
+
+docker run --rm cookievigil --help
+
+Auditer un site en ligne :
+bash
+
+
+
+docker run --rm cookievigil https://example.com --fail-on none
+
+Générer les rapports dans un dossier local :
+bash
+
+
+
+mkdir -p reports
+sudo chown -R 1000:1000 reports
+chmod -R u+rwX reports
+
+docker run --rm \
+  -v "$(pwd)/reports:/app/reports" \
+  cookievigil https://example.com \
+  --format all \
+  --output audit_docker \
+  --fail-on none
+
+Le conteneur CookieVigil s’exécute avec un utilisateur non-root pour réduire les risques en cas de compromission du processus.
+Utilisation Avec Docker ComposeSelon votre environnement, la commande peut être :
+bash
+
+
+
+docker compose
+
+ou :
+bash
+
+
+
+docker-compose
+
 Construire les services :
+bash
 
-docker compose build
+
+
+docker-compose build
+
 Démarrer l’application vulnérable :
+bash
 
-docker compose up -d vulnerable-app
+
+
+docker-compose up -d vulnerable-app
+
 Lancer CookieVigil contre l’application vulnérable :
+bash
 
-docker compose run --rm cookievigil \
+
+
+docker-compose run --rm cookievigil \
   http://vulnerable-app:5000/set-bad-cookies \
   --force-https-context \
   --format all \
   --fail-on none
+
 Arrêter l’environnement :
+bash
 
-docker compose down
-Remarque : selon l’environnement, la commande peut être docker compose ou docker-compose.
 
-Intégration GitHub Actions
-Le projet contient un workflow GitHub Actions :
+
+docker-compose down
+
+Si une erreur de permission apparaît lors de la génération des rapports :
+text
+
+
+
+Permission denied: reports/rapport_cookies.json
+
+corriger les droits du dossier local :
+bash
+
+
+
+sudo chown -R 1000:1000 reports
+chmod -R u+rwX reports
+
+Intégration GitHub ActionsLe projet contient un workflow GitHub Actions :
+text
+
+
 
 .github/workflows/cookievigil.yml
-Ce workflow permet de :
 
+Ce workflow permet de :
 installer les dépendances Python ;
 exécuter les tests unitaires et d’intégration ;
-construire l’environnement Docker ;
+construire les conteneurs Docker ;
 démarrer l’application vulnérable ;
 exécuter CookieVigil ;
 générer les rapports ;
 publier les rapports comme artefacts de pipeline.
-Rapports Générés
-Les rapports sont générés dans le dossier reports/.
+Exemple D’Intégration CI/CD Pour Une Application RéelleDans une chaîne CI/CD, CookieVigil peut être exécuté contre une application de test, de staging ou de préproduction.
+Exemple générique :
+yaml
 
+
+
+- name: Audit des cookies avec CookieVigil
+  run: |
+    python audit_cookies.py https://staging.example.com \
+      --format all \
+      --output audit_cookies \
+      --fail-on high
+
+Avec Docker :
+yaml
+
+
+
+- name: Audit des cookies avec CookieVigil dans Docker
+  run: |
+    docker run --rm cookievigil https://staging.example.com \
+      --format all \
+      --fail-on high
+
+Avec un seuil de score :
+yaml
+
+
+
+- name: Audit avec seuil de score
+  run: |
+    python audit_cookies.py https://staging.example.com \
+      --format all \
+      --fail-score-below 70
+
+Rapports GénérésLes rapports sont générés dans le dossier reports/.
 Formats disponibles :
+text
+
+
 
 json
 html
 csv
 md
 all
-Exemple :
 
-python audit_cookies.py https://example.com --format all --output audit_report
-Tests
-Lancer tous les tests :
+Exemple :
+bash
+
+
+
+cookievigil https://example.com --format all --output audit_report
+
+Fichiers générés :
+text
+
+
+
+reports/audit_report.json
+reports/audit_report.html
+reports/audit_report.csv
+reports/audit_report.md
+
+Les rapports peuvent contenir des métadonnées sensibles. Ils ne doivent pas être publiés sans vérification.
+TestsLancer tous les tests :
+bash
+
+
 
 python -m unittest discover -s tests -p "test_*.py" -v
-La suite de tests couvre notamment :
 
+La suite de tests couvre notamment :
 le parsing des cookies ;
+la détection fiable des attributs Secure et HttpOnly ;
 la collecte des cookies dans les redirections ;
 les règles de sécurité ;
 la classification des cookies ;
 la corrélation des risques ;
+le score de sécurité ;
 la génération des rapports ;
 l’intégration entre collecteur, analyseur et générateur de rapports.
+Exemple de résultat attendu :
+text
+
+
+
+Ran 53 tests
+OK
 
 Sécurité De L’OutilCookieVigil peut manipuler des métadonnées sensibles liées aux cookies. Les rapports générés doivent donc être protégés.
+Mesures prises :
+troncature des valeurs de cookies affichées ;
+conservation de la valeur complète uniquement pour l’analyse interne ;
+génération de hash SHA-256 pour éviter l’exposition directe des valeurs ;
+exécution Docker avec utilisateur non-root ;
+séparation entre l’application vulnérable et l’outil d’audit ;
+possibilité de contrôler les seuils de blocage CI/CD.
 Voir le fichier SECURITY.md pour les recommandations de sécurité, les limites d’usage et les consignes de divulgation responsable.
 LimitesCookieVigil est un outil d’audit automatisé. Il ne remplace pas :
 un test d’intrusion complet ;
@@ -277,10 +535,32 @@ une analyse dynamique avec navigateur ;
 Burp Suite ;
 OWASP ZAP ;
 une validation métier des risques.
-Les résultats doivent être interprétés selon le contexte de l’application auditée.
+Limites actuelles :
+l’outil analyse principalement les cookies observés dans les réponses HTTP ;
+il ne simule pas encore un navigateur complet ;
+il n’exécute pas le JavaScript côté client ;
+il ne remplace pas une analyse fonctionnelle de l’application ;
+il nécessite une interprétation humaine des résultats.
+Perspectives D’ÉvolutionÉvolutions possibles :
+intégration d’un navigateur headless comme Playwright ;
+détection des cookies créés dynamiquement côté client ;
+export SARIF pour intégration avancée avec GitHub Security ;
+configuration des règles via fichier YAML ;
+tableau de bord web pour visualiser les résultats ;
+comparaison automatique entre plusieurs environnements.
 Statut Du ProjetProjet académique orienté cybersécurité et DevSecOps.
 Il peut être utilisé comme base pour :
 un mémoire de fin d’études ;
 une démonstration DevSecOps ;
 un laboratoire de sensibilisation à la sécurité des cookies ;
 une extension vers des contrôles de sécurité web plus avancés.
+
+
+
+
+
+Après remplacement :
+
+```bash
+git add README.md
+git commit -m "Rewrite README with complete French usage documentation"
