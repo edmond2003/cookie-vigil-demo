@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 LABEL maintainer="CookieVigil Project"
-LABEL description="CookieVigil - Automated web cookie security auditor"
+LABEL description="CookieVigil - outil automatisé d'audit de sécurité des cookies web"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -18,6 +18,11 @@ COPY cookievigil.py .
 COPY src ./src
 COPY tests ./tests
 
-RUN mkdir -p reports
+RUN mkdir -p reports \
+    && groupadd -g 1000 cookievigil \
+    && useradd -u 1000 -g cookievigil -m -s /usr/sbin/nologin cookievigil \
+    && chown -R cookievigil:cookievigil /app
+
+USER cookievigil
 
 ENTRYPOINT ["python", "audit_cookies.py"]

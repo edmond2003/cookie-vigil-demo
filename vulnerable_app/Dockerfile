@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-LABEL description="Vulnerable Flask application for CookieVigil demonstrations"
+LABEL description="Application Flask volontairement vulnérable pour les démonstrations CookieVigil"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,24 +14,11 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY app.py .
 
-EXPOSE 5000
+RUN groupadd -g 1000 vulnapp \
+    && useradd -u 1000 -g vulnapp -m -s /usr/sbin/nologin vulnapp \
+    && chown -R vulnapp:vulnapp /app
 
-CMD ["python", "app.py"]
-FROM python:3.11-slim
-
-LABEL description="Vulnerable Flask application for CookieVigil demonstrations"
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-WORKDIR /app
-
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-COPY app.py .
+USER vulnapp
 
 EXPOSE 5000
 
