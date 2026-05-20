@@ -1,6 +1,3 @@
-
-**.github/workflows/cookievigil.yml**
-```yaml
 name: CookieVigil CI
 
 on:
