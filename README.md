@@ -152,8 +152,12 @@ cookie-vigil-demo/
 Installation Locale
 Cloner le dépôt :
 
-git clone https://github.com/<votre-utilisateur>/<votre-depot>.git
-cd <votre-depot>
+git clone https://github.com/edmond2003/cookie-vigil-demo.git
+cd cookie-vigil-demo
+
+Alternative (SSH – pour ceux qui ont une clé configurée)
+git clone git@github.com:edmond2003/cookie-vigil-demo.git
+cd cookie-vigil-demo
 
 Créer un environnement virtuel :
 
