@@ -263,7 +263,7 @@ class TestAnalyzer(unittest.TestCase):
             }
         }
         score = self.analyzer.calculate_security_score(stats)
-        self.assertEqual(score, 83)
+        self.assertEqual(score, 64)
 
     def test_perfect_cookie_no_issues(self):
         cookie = {

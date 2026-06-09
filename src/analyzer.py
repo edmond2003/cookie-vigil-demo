@@ -212,7 +212,7 @@ class CookieAnalyzer:
                 issue['recommendation'] = 'HttpOnly est recommandé uniquement si le cookie ne doit pas être accessible à JavaScript'
 
         elif rule_id == 'SAMESITE_MISSING':
-            if category in ['SESSION', 'AUTH', 'JWT', 'CSRF', 'PERSISTENT_AUTH']:
+            if category in ['SESSION', 'AUTH', 'JWT', 'CSRF', 'PERSISTENT_AUTH','SENSITIVE']:
                 issue['risk'] = 'MEDIUM'
                 issue['recommendation'] = 'Définir SameSite=Lax ou SameSite=Strict pour réduire le risque CSRF'
             else:
@@ -316,7 +316,19 @@ class CookieAnalyzer:
             })
 
         return correlations
+        
+    @staticmethod
+    def is_secure_cookie_attributes(cookie: Dict) -> bool:
+    	attrs = cookie.get("attributes", {})
 
+    	has_secure = bool(attrs.get("secure", False))
+    	has_httponly = bool(attrs.get("httponly", False))
+
+    	samesite = str(attrs.get("samesite", "")).lower().strip()
+    	samesite_ok = samesite in ["lax", "strict"]
+
+    	return has_secure and has_httponly and samesite_ok
+    	
     @classmethod
     def analyze_cookie(cls, cookie: Dict, context: Dict = None, source_url: str = None) -> Dict:
         """Analyse un cookie avec règles unitaires + contextualisation + corrélations."""
@@ -356,7 +368,10 @@ class CookieAnalyzer:
             'issues': issues,
             'correlations': correlations,
             'risk_level': max_risk,
-            'is_secure': max_risk in ['INFO', 'LOW'],
+            'is_secure': (
+    		max_risk in ['INFO', 'LOW']
+    		and cls.is_secure_cookie_attributes(cookie)
+		),
             'compliance_level': 'COMPLIANT' if max_risk in ['INFO', 'LOW'] else 'NON_COMPLIANT',
             'is_sensitive': is_sensitive,
             'category': category
@@ -401,18 +416,47 @@ class CookieAnalyzer:
 
     @classmethod
     def calculate_security_score(cls, statistics: Dict) -> int:
-        """Calcule un score de sécurité global pondéré."""
-        total = max(statistics.get('total', 0), 1)
-        risk_counts = statistics.get('risk_counts', {})
 
-        penalty = 0
-        for risk, count in risk_counts.items():
-            penalty += cls.RISK_WEIGHTS.get(risk, 0) * count
+    	total = max(statistics.get('total', 0), 1)
 
-        normalized_penalty = penalty / total
-        score = 100 - normalized_penalty
+    	risk_counts = statistics.get(
+        'issue_counts',
+        statistics.get('risk_counts', {})
+    	)
 
-        return max(0, min(100, round(score)))
+    	weighted_penalty = 0
+    	max_penalty = 0
+
+    	for risk, count in risk_counts.items():
+
+        	weight = cls.RISK_WEIGHTS.get(risk, 0)
+
+        	weighted_penalty += weight * count
+
+        	if count > 0 and weight > max_penalty:
+            		max_penalty = weight
+
+    	avg_penalty = weighted_penalty / total
+
+    	worst_case_factor = max_penalty * 0.3
+
+    	critical_ratio = risk_counts.get('CRITICAL', 0) / total
+    	high_ratio = risk_counts.get('HIGH', 0) / total
+
+    	distribution_penalty = (
+        	critical_ratio * 25 +
+        	high_ratio * 10
+    	)
+
+    	raw_penalty = (
+        	avg_penalty +
+        	worst_case_factor +
+        	distribution_penalty
+    	)
+
+    	score = 100 - raw_penalty
+
+    	return max(0, min(100, round(score)))
 
     @classmethod
     def _check_secure_missing(cls, cookie: Dict, context: Dict) -> bool:
