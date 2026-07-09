@@ -78,7 +78,7 @@ jobs:
             --force-https-context \
             --format all \
             --output ci_cookie_audit \
-            --fail-on none
+            --fail-on high
 
       - name: Publier les rapports comme artefacts
         uses: actions/upload-artifact@v4
