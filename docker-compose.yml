@@ -18,6 +18,8 @@ services:
       - cookievigil-lab
     volumes:
       - ./reports:/app/reports
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     command:
       [
         "http://vulnerable-app:5000/set-bad-cookies",

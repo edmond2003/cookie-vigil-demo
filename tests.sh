@@ -49,7 +49,7 @@ if [ $EXIT_CODE -eq 0 ]; then
     echo -e "${CYAN}[*] Durée totale : ${ELAPSED} secondes${RESET}"
     exit 0
 else
-    echo -e "\n${RED}${BOLD}❌ ÉCHEC : Certains tests ont échoué${RESET}"
+    echo -e "\n${RED}${BOLD} ÉCHEC : Certains tests ont échoué${RESET}"
     echo -e "${RED}   Durée totale : ${ELAPSED} secondes${RESET}"
     echo -e "${YELLOW}[!] Consultez la sortie ci-dessus pour identifier les tests en échec.${RESET}"
     exit 1

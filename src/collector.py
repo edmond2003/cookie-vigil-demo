@@ -89,7 +89,7 @@ class CookieCollector:
                     'source_url': response.url,
                     'timestamp': start_time.isoformat(),
                     'response_status': response.status_code,
-                    'tls_verified': self.verify_ssl,
+                    'tls_verified': self.verify_ssl and response.url.startswith('https://'),
                     'raw_header': cookie_str[:200] + "..." if len(cookie_str) > 200 else cookie_str,
                     # MISE A JOUR :
                     # Indique si le cookie provient d'une réponse intermédiaire de redirection.
@@ -226,7 +226,7 @@ class CookieCollector:
                             'source_url': url,
                             'timestamp': start_time.isoformat(),
                             'response_status': response.status_code,
-                            'tls_verified': self.verify_ssl,
+                            'tls_verified': self.verify_ssl and url.startswith('https://'),
                             'raw_header': cookie.get('raw_header', 'cookie_from_authenticated_session'),
                             'auth_mode': True,
                             'from_redirect': False
