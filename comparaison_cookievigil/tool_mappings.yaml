@@ -1,0 +1,99 @@
+# =====================================================================
+# tool_mappings.yaml
+# =====================================================================
+# Catégories de vulnérabilité liées aux cookies évaluées dans la
+# comparaison (doivent correspondre exactement aux flags générés par
+# build_ground_truth() dans normalize_metrics.py).
+# =====================================================================
+
+categories:
+  - SECURE_MISSING
+  - HTTPONLY_MISSING
+  - SAMESITE_MISSING
+  - SAMESITE_NONE_INSECURE
+  - DOMAIN_TOO_BROAD
+  - PATH_TOO_BROAD
+  - EXPIRES_LONG
+  - WEAK_TOKEN
+  - JWT_DETECTED
+
+tools:
+
+  # -------------------------------------------------------------------
+  # CookieVigil (outil développé dans le mémoire)
+  # -------------------------------------------------------------------
+  # NB : parse_cookievigil() lit directement les champs "rule_id" du
+  # JSON produit par l'outil et les compare tel quel aux catégories.
+  #  À CONFIRMER : les rule_id générés par CookieVigil doivent être
+  # strictement identiques aux noms de catégories ci-dessus
+  # (ex: "SECURE_MISSING", pas "secure_missing" ni "COOKIE_INSECURE").
+  # -------------------------------------------------------------------
+  cookievigil:
+    capabilities:
+      - SECURE_MISSING
+      - HTTPONLY_MISSING
+      - SAMESITE_MISSING
+      - SAMESITE_NONE_INSECURE
+      - DOMAIN_TOO_BROAD
+      - PATH_TOO_BROAD
+      - EXPIRES_LONG
+      - WEAK_TOKEN
+      - JWT_DETECTED
+    mapping: []   # non utilisé pour cookievigil (voir parse_cookievigil)
+
+  # -------------------------------------------------------------------
+  # Nikto
+  # -------------------------------------------------------------------
+  # Le plugin nikto_cookies ne teste QUE l'absence du flag HttpOnly.
+  # Confirmé expérimentalement : sur /set-bad-cookies (3 cookies tous
+  # non-secure/non-samesite), seuls les messages HttpOnly sont émis.
+  # -------------------------------------------------------------------
+  nikto:
+    capabilities:
+      - HTTPONLY_MISSING
+    mapping:
+      - pattern: "without the httponly flag"
+        category: HTTPONLY_MISSING
+
+  # -------------------------------------------------------------------
+  # Nuclei
+  # -------------------------------------------------------------------
+  # 3 templates cookies disponibles (cf. templates_disponibles.log)
+  # -------------------------------------------------------------------
+  nuclei:
+    capabilities:
+      - HTTPONLY_MISSING
+      - SECURE_MISSING
+      - SAMESITE_MISSING
+    mapping:
+      - pattern: "cookies-without-httponly"
+        category: HTTPONLY_MISSING
+      - pattern: "cookies-without-secure"
+        category: SECURE_MISSING
+      - pattern: "missing-cookie-samesite-strict"
+        category: SAMESITE_MISSING
+
+  # -------------------------------------------------------------------
+  # OWASP ZAP (scan passif uniquement — cf. run_zap.sh)
+  # -------------------------------------------------------------------
+  # Règles passives cookies confirmées dans le log de démarrage ZAP :
+  #   - "Cookie No HttpOnly Flag"
+  #   - "Cookie Without Secure Flag"
+  #   - "Cookie without SameSite Attribute"
+  #   - "Loosely Scoped Cookie" (domaine/scope trop large)
+  # -------------------------------------------------------------------
+  zap:
+    capabilities:
+      - HTTPONLY_MISSING
+      - SECURE_MISSING
+      - SAMESITE_MISSING
+      - DOMAIN_TOO_BROAD
+    mapping:
+      - pattern: "httponly"
+        category: HTTPONLY_MISSING
+      - pattern: "without secure|secure flag"
+        category: SECURE_MISSING
+      - pattern: "samesite"
+        category: SAMESITE_MISSING
+      - pattern: "loosely scoped"
+        category: DOMAIN_TOO_BROAD

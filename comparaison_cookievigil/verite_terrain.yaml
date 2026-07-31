@@ -1,0 +1,139 @@
+# =====================================================================
+# VERITE TERRAIN - Attributs réels des cookies de l'application vulnérable
+# =====================================================================
+
+meta:
+  https_context_forced: true
+  expires_long_threshold_seconds: 2592000
+  weak_token_max_length: 16
+
+# ---------------------------------------------------------------------
+# Routes et cookies associés
+# ---------------------------------------------------------------------
+
+routes:
+
+  /set-bad-cookies:
+    cookies:
+
+      session_insecure:
+        secure: false
+        httponly: false
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "<64_hex_chars>"
+
+      tracking:
+        secure: false
+        httponly: false
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "track_<32_hex_chars>"
+
+      user_data:
+        secure: false
+        httponly: false
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "user_<32_hex_chars>"
+
+  /set-good-cookies:
+    cookies:
+
+      session_secure:
+        secure: true
+        httponly: true
+        samesite: "Lax"
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "<64_hex_chars>"
+
+  /set-weak-token:
+    cookies:
+
+      weak_session:
+        secure: false
+        httponly: false
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "abc123"
+
+  /set-jwt-cookie:
+    cookies:
+
+      jwt_token:
+        secure: false
+        httponly: false
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        is_jwt: true
+
+  /set-long-expiry:
+    cookies:
+
+      long_lived_token:
+        secure: true
+        httponly: true
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: 31536000
+        value: "<64_hex_chars>"
+
+  /set-short-expiry:
+    cookies:
+
+      short_lived_token:
+        secure: true
+        httponly: true
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: 300
+        value: "<64_hex_chars>"
+
+  /dashboard:
+    requires_auth: true
+    login_url: "/login"
+    login_data: "username=admin&password=admin123"
+
+    cookies:
+
+      session_token:
+        secure: true
+        httponly: true
+        samesite: "Lax"
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "<64_hex_chars>"
+
+      username:
+        secure: false
+        httponly: true
+        samesite: null
+        domain: null
+        path: "/"
+        max_age_seconds: null
+        value: "admin"
+
+# ---------------------------------------------------------------------
+# Routes sans cookie
+# ---------------------------------------------------------------------
+
+routes_sans_cookie:
+  - /api/cookies
+  - /api/verify-cookie
+  - /api/health
